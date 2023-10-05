@@ -18,8 +18,5 @@ public class DiaryController {
 
         return "Locked";
     }
-    public Diary findDiary(String username){
-        diaryServices.findBy(username);
-        return null;
-    }
+
 }
