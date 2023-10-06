@@ -13,6 +13,8 @@ public interface DiaryServices {
     long count();
     void unlock(String username, String password);
 
+    void lock(String username);
+
 
     void delete(String username, String password);
 
@@ -22,21 +24,9 @@ public interface DiaryServices {
 
     void update(String username, String oldPassword, String newPassword);
 
-    interface EntryServices {
+    Entry addEntry(String username, String title, String body);
+    Entry findEntry(String username, String title);
 
-        Entry addEntry(String ownerName, String title, String body);
-
-        void add(Diary diary);
-        void delete(String ownerName, String title);
-
-
-        void clear();
-
-        Iterable<Diary> findAll();
-        long count();
-        void update(String username, String oldPassword, String newPassword);
-
-    }
 }
 
 
