@@ -1,5 +1,6 @@
 import controllers.DiaryController;
 import dtos.request.LoginRequest;
+import dtos.request.RegisterUserRequest;
 
 import java.util.Scanner;
 
@@ -30,10 +31,10 @@ public class Main {
     public static void registerAccount(){
         String username = input("Enter Username");
         String password = input("Enter password");
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername(username);
-        loginRequest.setPassword(username);
-        String registeredName = diaryController.registerUser(username, password);
+        RegisterUserRequest registerUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername(username);
+        registerUserRequest.setPassword(password);
+        String registeredName = diaryController.registerUser(registerUserRequest);
         print(registeredName);
         menu();
     }
@@ -43,7 +44,7 @@ public class Main {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername(username);
         loginRequest.setPassword(password);
-        String loggedIn = diaryController.unlockDiary(username, password);
+        String loggedIn = diaryController.unlockDiary(loginRequest);
         if(loggedIn.equals("Incorrect Password") || loggedIn.equals("Kindly input a correct Username")){
             print("Log in with correct details");
             logIn();
@@ -68,7 +69,12 @@ public class Main {
         switch (userInput){
             case '1' -> createEntry();
             case '2' -> findEntry();
+            case '3' -> logOut();
         }
+    }
+    public static void logOut(){
+        String locked = diaryController.lockDiary(currentUser);
+        print(locked);
     }
 
     private static void createEntry() {

@@ -2,16 +2,19 @@ package services;
 
 import data.models.Diary;
 import data.models.Entry;
+import dtos.request.LoginRequest;
+import dtos.request.RegisterUserRequest;
 
 public interface DiaryServices {
-    void register(String username, String password);
+    void register(RegisterUserRequest registerUserRequest);
 
     Diary save(String username, String password);
 
     Iterable<Diary> findAll();
 
     long count();
-    void unlock(String username, String password);
+    void unlock(LoginRequest loginRequest);
+
 
     void lock(String username);
 

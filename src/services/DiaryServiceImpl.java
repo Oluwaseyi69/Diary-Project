@@ -4,6 +4,10 @@ import data.models.Diary;
 import data.models.Entry;
 import data.repositories.DiaryRepo;
 import data.repositories.DiaryRepoImplementation;
+import dtos.request.LoginRequest;
+import dtos.request.RegisterUserRequest;
+
+import static utils.Mapper.map;
 
 public class DiaryServiceImpl implements DiaryServices {
     DiaryRepo diaryRepo = new DiaryRepoImplementation();
@@ -12,11 +16,10 @@ public class DiaryServiceImpl implements DiaryServices {
     private String password;
 
     @Override
-    public void register(String username, String password) {
-        checkUsername(username);
+    public void register(RegisterUserRequest registerUserRequest) {
+        checkUsername(registerUserRequest.getUsername());
         Diary diary = new Diary();
-        diary.setUsername(username);
-        diary.setPassword(password);
+        map(registerUserRequest, diary);
         diaryRepo.save(diary);
     }
 
@@ -37,9 +40,10 @@ public class DiaryServiceImpl implements DiaryServices {
     }
 
     @Override
-    public void unlock(String username, String password) {
-        Diary diary = diaryRepo.findBy(username);
-        if(diary.getPassword().equals(password)) diary.setLocked(false);
+    public void unlock(LoginRequest loginRequest) {
+        Diary diary = diaryRepo.findBy(loginRequest.getUsername());
+        if(diary == null) throw new IllegalArgumentException("Diary Not Found");
+        if(diary.getPassword().equals(loginRequest.getPassword())) diary.setLocked(false);
         else throw new IllegalArgumentException("Incorrect Password");
         diaryRepo.save(diary);
     }
@@ -55,14 +59,11 @@ public class DiaryServiceImpl implements DiaryServices {
     @Override
     public void delete(String username, String password) {
         Diary diary = findBy(username);
-        deleteDiary(password, diary);
-    }
-    private void deleteDiary(String password, Diary diary){
         if(diary.getPassword().equals(password)){
             diaryRepo.delete(diary);
         }
         else {
-            throw new IllegalArgumentException("Invalid Password");
+            throw new IllegalArgumentException("Invalid credentials");
         }
 
     }
@@ -79,8 +80,7 @@ public class DiaryServiceImpl implements DiaryServices {
                 return diary;
             }
         }
-        throw new IllegalArgumentException("Kindly input a correct Username");
-
+        throw new IllegalArgumentException("Diary not Found");
     }
 
 

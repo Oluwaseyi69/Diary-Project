@@ -23,7 +23,7 @@ public class DiaryRepoImplementation implements DiaryRepo{
                 return diary;
             }
         }
-        throw new InputMismatchException("Invalid Id");
+            return null;
     }
 
     private void saveNew(Diary diary) {

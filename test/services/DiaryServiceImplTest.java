@@ -1,5 +1,7 @@
 package services;
 
+import dtos.request.LoginRequest;
+import dtos.request.RegisterUserRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -7,60 +9,74 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DiaryServiceImplTest {
     private DiaryServices diaryServices;
+    private RegisterUserRequest registerUserRequest;
+    private LoginRequest loginRequest;
 
     @BeforeEach
     public void startWith(){
         diaryServices = new DiaryServiceImpl();
+
+        registerUserRequest = new RegisterUserRequest();
+        registerUserRequest.setUsername("Username");
+        registerUserRequest.setPassword("Password");
+
+        loginRequest = new LoginRequest();
+        loginRequest.setUsername("Username");
+        loginRequest.setPassword("Password");
     }
 
 
     @Test
     public void testToRegister() {
-        diaryServices.register("Seyi", "password");
-        diaryServices.register("Tomide","password");
-        diaryServices.register("kevin","pass");
+        diaryServices.register(registerUserRequest);
+        assertEquals(1,diaryServices.count());
+    }
 
-        assertEquals(3,diaryServices.count());
+    @Test
+    public void saveMoreThanOneDiary(){
+        diaryServices.register(registerUserRequest);
+        RegisterUserRequest registerUserRequest1 = new RegisterUserRequest();
+        diaryServices.register(registerUserRequest1);
+        assertEquals(2,diaryServices.count());
 
     }
 
     @Test
     public void testForUniqueUsername(){
-        diaryServices.register("Esther", "password");
+        diaryServices.register(registerUserRequest);
 
         assertThrows(IllegalArgumentException.class,
-                ()->{diaryServices.register("Esther", "password");});
+                ()->{diaryServices.register(registerUserRequest);});
         assertEquals(1,diaryServices.count());
 
     }
     @Test
     public void testThatUserCanBeCreatedAndFound(){
-        diaryServices.register("Seyi", "password");
-        assertEquals("Seyi", diaryServices.findBy("Seyi").getUsername());
+        diaryServices.register(registerUserRequest);
+        assertEquals("Username", diaryServices.findBy("Username").getUsername());
     }
     @Test
     public void testThatUserCanBeDeleted(){
-        diaryServices.register("Esther", "password");
-        assertEquals("Esther", diaryServices.findBy("Esther").getUsername());
-        diaryServices.delete("Esther", "password");
+        diaryServices.register(registerUserRequest);
+        diaryServices.delete("Username", "Password");
         assertEquals(0,diaryServices.count());
 
 
     }
     @Test
     public void testToSearch_A_DeletedDiary(){
-        diaryServices.register("Seyi", "password");
-        diaryServices.register("Esther", "password");
-        assertEquals(2, diaryServices.count());
+        diaryServices.register(registerUserRequest);
+        RegisterUserRequest registerUserRequest1 = new RegisterUserRequest();
+        diaryServices.register(registerUserRequest1);
 
-        diaryServices.delete("Seyi", "password");
-        assertThrows(IllegalArgumentException.class,
-                ()-> diaryServices.findBy("Seyi"));
+        diaryServices.delete("Username", "Password");
+        assertEquals(1, diaryServices.count());
+
     }
 
     @Test
     public void testToDeleteDiaryWithWrongPassword(){
-        diaryServices.register("Seyi", "password");
+        diaryServices.register(registerUserRequest);
         assertThrows(IllegalArgumentException.class,
                 ()-> diaryServices.delete("Seyi", "passwo"));
 
@@ -68,10 +84,10 @@ class DiaryServiceImplTest {
 
     @Test
     public void testToChangePassword(){
-        diaryServices.register("Seyi", "Password");
-        diaryServices.update("Seyi", "Password", "newPassword");
+        diaryServices.register(registerUserRequest);
+        diaryServices.update("Username", "Password", "newPassword");
         assertThrows(IllegalArgumentException.class,
-                ()-> diaryServices.delete("Seyi", "Password"));
+                ()-> diaryServices.delete("Username", "Password"));
         assertEquals(1, diaryServices.count());
 
 

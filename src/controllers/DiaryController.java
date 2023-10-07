@@ -1,23 +1,25 @@
 package controllers;
 
 import data.models.Entry;
+import dtos.request.LoginRequest;
+import dtos.request.RegisterUserRequest;
 import services.DiaryServiceImpl;
 import services.DiaryServices;
 
 public class DiaryController {
     private DiaryServices diaryServices = new DiaryServiceImpl();
-    public String registerUser(String username, String password){
+    public String registerUser(RegisterUserRequest registerUserRequest){
         try {
-            diaryServices.register(username, password);
+            diaryServices.register(registerUserRequest);
             return "Registered Successful";
         }
         catch (Exception exception){
             return exception.getMessage();
         }
     }
-    public String unlockDiary(String username, String password){
+    public String  unlockDiary(LoginRequest loginRequest){
         try {
-            diaryServices.unlock(username, password);
+            diaryServices.unlock(loginRequest);
             return "Diary Unlocked";
         }
         catch (Exception e){
