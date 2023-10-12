@@ -2,9 +2,11 @@ package services;
 
 import data.models.Diary;
 import data.models.Entry;
+import dtos.request.CreateEntryRequest;
+import dtos.request.FindEntryRequest;
 
 public interface EntryServices {
-    Entry addEntry(String ownerName, String title, String body);
+    Entry addEntry(CreateEntryRequest createEntryRequest);
 
     Iterable<Diary> findAll();
 
@@ -18,5 +20,5 @@ public interface EntryServices {
 
     void clear();
 
-    Entry findEntry(String ownerName, String title);
+    Entry findEntry(FindEntryRequest findEntryRequest);
 }

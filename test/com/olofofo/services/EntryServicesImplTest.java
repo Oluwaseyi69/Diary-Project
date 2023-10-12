@@ -1,27 +1,36 @@
 package services;
 
+import dtos.request.CreateEntryRequest;
+import dtos.request.FindEntryRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class EntryServicesImplTest {
     private EntryServices entryServices;
+    private CreateEntryRequest createEntryRequest;
     @BeforeEach
     public void startWith(){
         entryServices = new EntryServicesImpl();
+
+        createEntryRequest = new CreateEntryRequest();
+        createEntryRequest.setOwnerName("Username");
+        createEntryRequest.setBody("Body");
+        createEntryRequest.setTitle("Title");
+
     }
     @Test
     public void testThatEntryCanBeAdded(){
-        entryServices.addEntry("Owner Name", "title", "body");
+        entryServices.addEntry(createEntryRequest);
         assertEquals(1, entryServices.count());
     }
 
     @Test
     public void testThatEntryCanBelongingToUserCanBeDeletedUsingTitle(){
-        entryServices.addEntry("Owner Name", "title", "body");
-        entryServices.addEntry("Owner Name", "titleOfEntry", "body");
+        entryServices.addEntry(createEntryRequest);
+        entryServices.addEntry(createEntryRequest);
         assertEquals(2, entryServices.count());
 
         entryServices.delete("Owner Name", "title");
@@ -30,18 +39,18 @@ public class EntryServicesImplTest {
     }
     @Test
     public void testThatDeleteEntryThrowsExceptionIfEntryNotFound(){
-        entryServices.addEntry("Owner Name", "title", "body");
-        entryServices.addEntry("Owner Name", "titleOfEntry", "body");
+        entryServices.addEntry(createEntryRequest);
+        entryServices.addEntry(createEntryRequest);
         assertEquals(2, entryServices.count());
 
         assertThrows(IllegalArgumentException.class, ()-> entryServices.delete("Owner Name", "NoTitle"));
     }
     @Test
     public void testThatEntryServicesThrowsExceptionIfEntryNotFound(){
-        entryServices.addEntry("Seyi Banwo", "title", "body");
-        entryServices.addEntry("Seyi Banwo", "Header title", "body");
+        entryServices.addEntry(createEntryRequest);
+        entryServices.addEntry(createEntryRequest);
         assertEquals(2, entryServices.count());
-        assertThrows(IllegalArgumentException.class, ()-> entryServices.findEntry("Owner Name", "NoTitle"));
+        assertThrows(IllegalArgumentException.class, ()-> entryServices.findEntry(new FindEntryRequest()));
 
     }
 

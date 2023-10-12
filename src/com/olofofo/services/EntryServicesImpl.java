@@ -4,6 +4,10 @@ import data.models.Diary;
 import data.models.Entry;
 import data.repositories.EntryRepo;
 import data.repositories.EntryRepoImplementation;
+import dtos.request.CreateEntryRequest;
+import dtos.request.FindEntryRequest;
+
+import static utils.Mapper.map;
 
 public class EntryServicesImpl implements EntryServices {
     private EntryRepo entryRepo = new EntryRepoImplementation();
@@ -11,18 +15,18 @@ public class EntryServicesImpl implements EntryServices {
 
 
     @Override
-    public Entry addEntry(String ownerName, String title, String body) {
-        Entry newEntry = new Entry();
-        newEntry.setOwnerName(ownerName);
-        newEntry.setTitle(title);
-        newEntry.setBody(body);
+    public Entry addEntry(CreateEntryRequest createEntryRequest) {
+        Entry newEntry = map(createEntryRequest);
         entryRepo.save(newEntry);
         return newEntry;
     }
 
     @Override
     public void delete(String ownerName, String title) {
-        Entry foundEntry = findEntry(ownerName, title);
+        FindEntryRequest findEntryRequest = new FindEntryRequest();
+        findEntryRequest.setUsername(ownerName);
+        findEntryRequest.setTitle(title);
+        Entry foundEntry = findEntry(findEntryRequest);
         entryRepo.delete(foundEntry);
     }
 
@@ -31,8 +35,18 @@ public class EntryServicesImpl implements EntryServices {
 
     }
 
-    public Entry findEntry(String ownerName, String title){
-        Entry foundEntry = entryRepo.findByUsername(ownerName, title);
+//    @Override
+//    public Entry findEntry(FindEntryRequest findEntryRequest) {
+//        return null;
+//    }
+
+//    @Override
+//    public Entry findEntry(FindEntryRequest findEntryRequest) {
+//        return null;
+//    }
+
+    public Entry findEntry(FindEntryRequest findEntryRequest){
+        Entry foundEntry = entryRepo.findByUsername(findEntryRequest.getUsername(), findEntryRequest.getTitle());
         boolean entryIsNotFound = foundEntry == null;
         if(entryIsNotFound) throw new IllegalArgumentException("Entry is not found");
         return foundEntry;

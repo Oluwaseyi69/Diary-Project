@@ -1,5 +1,6 @@
 package services;
 
+import dtos.request.CreateEntryRequest;
 import dtos.request.LoginRequest;
 import dtos.request.RegisterUserRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ class DiaryServiceImplTest {
     private DiaryServices diaryServices;
     private RegisterUserRequest registerUserRequest;
     private LoginRequest loginRequest;
+    private CreateEntryRequest createEntryRequest;
 
     @BeforeEach
     public void startWith(){
@@ -23,6 +25,11 @@ class DiaryServiceImplTest {
         loginRequest = new LoginRequest();
         loginRequest.setUsername("Username");
         loginRequest.setPassword("Password");
+
+        createEntryRequest = new CreateEntryRequest();
+        createEntryRequest.setOwnerName("OwnerName");
+        createEntryRequest.setBody("Body");
+        createEntryRequest.setTitle("Title");
     }
 
 

@@ -1,11 +1,12 @@
 package controllers;
 
 import data.models.Entry;
-import dtos.request.LoginRequest;
-import dtos.request.RegisterUserRequest;
+import dtos.request.*;
+import org.springframework.web.bind.annotation.RestController;
 import services.DiaryServiceImpl;
 import services.DiaryServices;
 
+@RestController
 public class DiaryController {
     private DiaryServices diaryServices = new DiaryServiceImpl();
     public String registerUser(RegisterUserRequest registerUserRequest){
@@ -35,18 +36,17 @@ public class DiaryController {
             return exception.getMessage();
         }
     }
-    public String findEntry(String username, String title){
+    public Object findEntry(FindEntryRequest findEntryRequest){
         try {
-            Entry entry = diaryServices.findEntry(username, title);
-            return entry.toString();
+            return diaryServices.findEntry(findEntryRequest);
         }
         catch (Exception exception){
            return exception.getMessage();
         }
     }
-    public String createEntry(String username, String title, String body){
+    public String createEntry(CreateEntryRequest createEntryRequest){
         try {
-            diaryServices.addEntry(username, title, body);
+            diaryServices.addEntry(createEntryRequest);
             return "Entry Successfully Created";
         } catch (Exception e) {
             return e.getMessage();

@@ -4,8 +4,7 @@ import data.models.Diary;
 import data.models.Entry;
 import data.repositories.DiaryRepo;
 import data.repositories.DiaryRepoImplementation;
-import dtos.request.LoginRequest;
-import dtos.request.RegisterUserRequest;
+import dtos.request.*;
 
 import static utils.Mapper.map;
 
@@ -84,7 +83,7 @@ public class DiaryServiceImpl implements DiaryServices {
     }
 
 
-    private void checkUsername(String username) {
+    private void  checkUsername(String username) {
         for (Diary diary: diaryRepo.findAll()){
             if(diary.getUsername().equals(username)){
                 throw new IllegalArgumentException("Kindly input the correct details");
@@ -100,9 +99,9 @@ public class DiaryServiceImpl implements DiaryServices {
     }
 
     @Override
-    public Entry addEntry(String username, String title, String body) {
-        validateUser(username);
-        return entryServices.addEntry(username, title, body);
+    public Entry addEntry(CreateEntryRequest createEntryRequest) {
+        validateUser(createEntryRequest.getOwnerName());
+        return entryServices.addEntry(createEntryRequest);
     }
     private void validateUser(String username){
         Diary foundDiary = diaryRepo.findBy(username);
@@ -112,9 +111,13 @@ public class DiaryServiceImpl implements DiaryServices {
             throw new IllegalArgumentException("Diary is Locked");
 
     }
-    public Entry findEntry(String username, String password){
-        Entry entry = entryServices.findEntry(username, password);
-        return entry;
+    public FindEntryResponse findEntry(FindEntryRequest findEntryRequest){
+        Entry entry = entryServices.findEntry(findEntryRequest);
+        FindEntryResponse findEntryResponse = new FindEntryResponse();
+        findEntryResponse.setTitle(entry.getTitle());
+        findEntryResponse.setBody(entry.getBody());
+
+        return findEntryResponse;
     }
 
 
