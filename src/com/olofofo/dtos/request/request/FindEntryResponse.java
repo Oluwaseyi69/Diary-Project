@@ -1,4 +1,4 @@
-package dtos.request;
+package com.olofofo.request;
 
 import lombok.Data;
 
