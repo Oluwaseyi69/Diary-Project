@@ -1,123 +1,81 @@
-package services;
+package com.olofofo.services;
 
-import data.models.Diary;
-import data.models.Entry;
-import data.repositories.DiaryRepo;
-import data.repositories.DiaryRepoImplementation;
-import dtos.request.*;
+import com.olofofo.data.models.Diary;
+import com.olofofo.data.models.Entry;
+import com.olofofo.data.repositories.DiaryRepo;
+import com.olofofo.data.repositories.EntryRepo;
+import com.olofofo.dtos.request.request.*;
+import com.olofofo.dtos.request.response.RegisterUserResponse;
+import com.olofofo.exception.DiaryExistException;
+import com.olofofo.exception.IncorrectDetailsException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import static utils.Mapper.map;
+import java.util.Optional;
 
+import static com.olofofo.utils.Mapper.map;
+
+@Service
 public class DiaryServiceImpl implements DiaryServices {
-    DiaryRepo diaryRepo = new DiaryRepoImplementation();
-    EntryServices entryServices = new EntryServicesImpl();
-    private String username;
-    private String password;
+   private DiaryRepo diaryRepo;
+
+   @Autowired
+   public void setter (DiaryRepo diaryRepo){
+       this.diaryRepo = diaryRepo;
+   }
+
+
 
     @Override
-    public void register(RegisterUserRequest registerUserRequest) {
-        checkUsername(registerUserRequest.getUsername());
-        Diary diary = new Diary();
-        map(registerUserRequest, diary);
-        diaryRepo.save(diary);
-    }
-
-    @Override
-    public Diary save(String username, String password) {
-        return null;
-    }
-
-    @Override
-    public Iterable<Diary> findAll() {
-        return null;
+    public RegisterUserResponse register(RegisterUserRequest registerUserRequest) {
+        checkUsername(registerUserRequest);
+        return map(diaryRepo.save(map(registerUserRequest)));
     }
 
 
     @Override
-    public long count() {
-        return diaryRepo.count();
+    public boolean unlock(LoginRequest loginRequest) {
+        Optional<Diary> diary = findBy(loginRequest.getUsername());
+        if(diary.isEmpty()) throw new IllegalArgumentException("Diary Not Found");
+        if(!diary.get().getUsername().equals(loginRequest.getUsername()) ||
+                !diary.get().getPassword().equals(loginRequest.getPassword()))
+            throw new IncorrectDetailsException("Incorrect Credentials");
+
+        diary.get().setLocked(false);
+        return true;
     }
 
     @Override
-    public void unlock(LoginRequest loginRequest) {
-        Diary diary = diaryRepo.findBy(loginRequest.getUsername());
-        if(diary == null) throw new IllegalArgumentException("Diary Not Found");
-        if(diary.getPassword().equals(loginRequest.getPassword())) diary.setLocked(false);
-        else throw new IllegalArgumentException("Incorrect Password");
-        diaryRepo.save(diary);
+    public boolean lock(String username) {
+         Optional<Diary> diary = findBy(username);
+         if (diary.isPresent())diary.get().setLocked(true);
+
+        return true;
     }
 
     @Override
-    public void lock(String username) {
-         Diary foundDiary = findBy(username);
-         foundDiary.setLocked(true);
-         diaryRepo.save(foundDiary);
+    public void delete(DeleteDiaryRequest deleteDiaryRequest) {
+        Optional<Diary> diary = findBy(deleteDiaryRequest.getUsername());
+        if(diary.isPresent())diary.get().getPassword().equals(deleteDiaryRequest.getPassword());
+
     }
 
-
-    @Override
-    public void delete(String username, String password) {
-        Diary diary = findBy(username);
-        if(diary.getPassword().equals(password)){
-            diaryRepo.delete(diary);
-        }
-        else {
-            throw new IllegalArgumentException("Invalid credentials");
-        }
-
+    public Optional<Diary> findBy(String username) {
+       Optional<Diary> diary = diaryRepo.findDiaryByUsername(username);
+        return diary;
+    }
+    private void  checkUsername(RegisterUserRequest registerUserRequest) {
+        Optional<Diary> diary = findBy(registerUserRequest.getUsername());
+        if(diary.isPresent())
+            throw new DiaryExistException("Dairy Exist");
     }
 
     @Override
-    public void clear() {
-
-    }
-
-    @Override
-    public Diary findBy(String username) {
-        for(Diary diary : diaryRepo.findAll()){
-            if(diary.getUsername().equals(username)){
-                return diary;
-            }
-        }
-        throw new IllegalArgumentException("Diary not Found");
-    }
-
-
-    private void  checkUsername(String username) {
-        for (Diary diary: diaryRepo.findAll()){
-            if(diary.getUsername().equals(username)){
-                throw new IllegalArgumentException("Kindly input the correct details");
-            }
-        }
-    }
-
-    @Override
-    public void update(String username, String oldPassword, String newPassword) {
-        Diary diary = findBy(username);
-        if(diary.getPassword().equals(oldPassword)) diary.setPassword(newPassword);
+    public void  update(PasswordUpdate passwordUpdate, RegisterUserRequest registerUserRequest) {
+        if(registerUserRequest.getPassword().equals(passwordUpdate
+                .getOldPassword())) registerUserRequest
+                .setPassword(passwordUpdate.getNewPassword());
         else throw new IllegalArgumentException("Kindly input the correct details");
-    }
-
-    @Override
-    public Entry addEntry(CreateEntryRequest createEntryRequest) {
-        validateUser(createEntryRequest.getOwnerName());
-        return entryServices.addEntry(createEntryRequest);
-    }
-    private void validateUser(String username){
-        Diary foundDiary = diaryRepo.findBy(username);
-        if(foundDiary == null)
-            throw new IllegalArgumentException("Diary is not Found");
-        if(foundDiary.isLocked())
-            throw new IllegalArgumentException("Diary is Locked");
-
-    }
-    public FindEntryResponse findEntry(FindEntryRequest findEntryRequest){
-        Entry entry = entryServices.findEntry(findEntryRequest);
-        FindEntryResponse findEntryResponse = new FindEntryResponse();
-        findEntryResponse.setTitle(entry.getTitle());
-        findEntryResponse.setBody(entry.getBody());
-
-        return findEntryResponse;
     }
 
 

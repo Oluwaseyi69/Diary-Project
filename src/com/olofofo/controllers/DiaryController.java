@@ -1,14 +1,23 @@
-package controllers;
+package com.olofofo.controllers;
 
-import data.models.Entry;
-import dtos.request.*;
-import org.springframework.web.bind.annotation.RestController;
-import services.DiaryServiceImpl;
-import services.DiaryServices;
+import com.olofofo.dtos.request.request.*;
+//import com.olofofo.request.*;
+import com.olofofo.services.EntryServices;
+import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import com.olofofo.services.DiaryServiceImpl;
+import com.olofofo.services.DiaryServices;
 
 @RestController
+@RequestMapping("/Olofofo")
 public class DiaryController {
-    private DiaryServices diaryServices = new DiaryServiceImpl();
+    @Autowired
+    private DiaryServices diaryServices;
+//    @Autowired
+//    private EntryServices entryServices;
+
+    @PostMapping("/register")
     public String registerUser(RegisterUserRequest registerUserRequest){
         try {
             diaryServices.register(registerUserRequest);
@@ -18,6 +27,8 @@ public class DiaryController {
             return exception.getMessage();
         }
     }
+
+    @PatchMapping("/unlock")
     public String  unlockDiary(LoginRequest loginRequest){
         try {
             diaryServices.unlock(loginRequest);
@@ -27,6 +38,7 @@ public class DiaryController {
             return e.getMessage();
         }
     }
+    @PatchMapping("/lock")
     public String lockDiary(String username){
         try {
             diaryServices.lock(username);
@@ -36,20 +48,37 @@ public class DiaryController {
             return exception.getMessage();
         }
     }
-    public Object findEntry(FindEntryRequest findEntryRequest){
+    @GetMapping ("Find Entry")
+    public Object findEntry(String username){
         try {
-            return diaryServices.findEntry(findEntryRequest);
+            return diaryServices.findBy(username);
         }
         catch (Exception exception){
            return exception.getMessage();
         }
     }
-    public String createEntry(CreateEntryRequest createEntryRequest){
+
+
+
+//    @PostMapping("/create entry")
+//    public String createEntry(AddEntryRequest addEntryRequest){
+//        try {
+//            entryServices.addEntry(addEntryRequest);
+//            return "Entry Successfully Created";
+//        } catch (Exception e) {
+//            return e.getMessage();
+//        }
+//    }
+
+    @DeleteMapping("/Delete")
+    public String delete(DeleteDiaryRequest deleteDiaryRequest){
         try {
-            diaryServices.addEntry(createEntryRequest);
-            return "Entry Successfully Created";
+            diaryServices.delete(deleteDiaryRequest);
+            return "Successfully Deleted";
         } catch (Exception e) {
             return e.getMessage();
         }
+
     }
 }
+

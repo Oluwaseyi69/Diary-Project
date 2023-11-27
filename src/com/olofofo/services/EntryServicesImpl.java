@@ -1,62 +1,56 @@
-package services;
+package com.olofofo.services;
 
-import data.models.Diary;
-import data.models.Entry;
-import data.repositories.EntryRepo;
-import data.repositories.EntryRepoImplementation;
-import dtos.request.CreateEntryRequest;
-import dtos.request.FindEntryRequest;
+import com.olofofo.data.models.Entry;
+import com.olofofo.data.repositories.EntryRepo;
+import com.olofofo.dtos.request.request.AddEntryRequest;
+import com.olofofo.dtos.request.request.FindEntryRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import static utils.Mapper.map;
+import java.util.Optional;
 
+import static com.olofofo.utils.Mapper.map;
+@Service
 public class EntryServicesImpl implements EntryServices {
-    private EntryRepo entryRepo = new EntryRepoImplementation();
+    private EntryRepo entryRepo;
+
+    private EntryServices entryServices;
 
 
-
-    @Override
-    public Entry addEntry(CreateEntryRequest createEntryRequest) {
-        Entry newEntry = map(createEntryRequest);
-        entryRepo.save(newEntry);
-        return newEntry;
+    @Autowired
+    public void setter(EntryRepo entryRepo){
+        this.entryRepo = entryRepo;
     }
 
     @Override
-    public void delete(String ownerName, String title) {
-        FindEntryRequest findEntryRequest = new FindEntryRequest();
-        findEntryRequest.setUsername(ownerName);
-        findEntryRequest.setTitle(title);
-        Entry foundEntry = findEntry(findEntryRequest);
-        entryRepo.delete(foundEntry);
+    public Optional<Entry> addEntry(AddEntryRequest addEntryRequest) {
+        Optional<Entry> entry=  validateEntry(addEntryRequest.getUsername());
+        if(entry.isEmpty()){
+            entryServices.addEntry(addEntryRequest);
+        }
+        return entry;
     }
+    private Optional<Entry> validateEntry(String title){
+        Optional<Entry> foundDiary = entryRepo.findEntryBy(title);
+        return foundDiary;
+    }
+
 
     @Override
     public void clear() {
 
     }
 
-//    @Override
-//    public Entry findEntry(FindEntryRequest findEntryRequest) {
-//        return null;
-//    }
 
-//    @Override
-//    public Entry findEntry(FindEntryRequest findEntryRequest) {
-//        return null;
-//    }
 
-    public Entry findEntry(FindEntryRequest findEntryRequest){
-        Entry foundEntry = entryRepo.findByUsername(findEntryRequest.getUsername(), findEntryRequest.getTitle());
-        boolean entryIsNotFound = foundEntry == null;
+    public Optional<Entry>  findEntry(FindEntryRequest findEntryRequest){
+        Optional<Entry> foundEntry = entryRepo.findEntryBy(findEntryRequest.getTitle());
+        boolean entryIsNotFound = foundEntry.isEmpty();
         if(entryIsNotFound) throw new IllegalArgumentException("Entry is not found");
         return foundEntry;
     }
 
 
-    @Override
-    public Iterable<Diary> findAll() {
-        return null;
-    }
 
     @Override
     public long count(){

@@ -1,17 +1,12 @@
-import controllers.DiaryController;
-import dtos.request.LoginRequest;
-import dtos.request.RegisterUserRequest;
+package com.olofofo;
+
+//import com.olofofo.controllers.DiaryController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import javax.swing.*;
-import java.util.Scanner;
-
-import static java.lang.System.in;
-import static java.lang.System.out;
 @SpringBootApplication
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String...args) {
         SpringApplication.run(Main.class, args);
     }
 

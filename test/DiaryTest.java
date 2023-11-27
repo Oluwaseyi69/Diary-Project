@@ -1,4 +1,4 @@
-import data.models.Diary;
+import com.olofofo.data.models.Diary;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,35 +1,37 @@
-package services;
+package com.olofofo.services;
 
-import data.models.Diary;
-import data.models.Entry;
-import dtos.request.*;
+import com.olofofo.data.models.Diary;
+import com.olofofo.dtos.request.request.*;
+import com.olofofo.dtos.request.response.RegisterUserResponse;
+
+import java.util.Optional;
 
 public interface DiaryServices {
-    void register(RegisterUserRequest registerUserRequest);
+    RegisterUserResponse register(RegisterUserRequest registerUserRequest);
 
-    Diary save(String username, String password);
+//    Diary save(String username, String password);
 
-    Iterable<Diary> findAll();
+//    Iterable<Diary> findAll();
 
-    long count();
-    void unlock(LoginRequest loginRequest);
-
-
-    void lock(String username);
+//    long count();
+    boolean unlock(LoginRequest loginRequest);
 
 
-    void delete(String username, String password);
-
-    void clear();
-
-    Diary findBy(String username);
-
-    void update(String username, String oldPassword, String newPassword);
-
-    Entry addEntry(CreateEntryRequest createEntryRequest);
+    boolean lock(String username);
 
 
-    FindEntryResponse findEntry(FindEntryRequest findEntryRequest);
+    void delete(DeleteDiaryRequest deleteDiaryRequest);
+
+
+    Optional<Diary> findBy(String username);
+
+
+    void update(PasswordUpdate passwordUpdate, RegisterUserRequest registerUserRequest);
+
+//    void addEntry(AddEntryRequest addEntryRequest);
+
+
+//    FindEntryResponse findEntry(FindEntryRequest findEntryRequest);
 
 }
 

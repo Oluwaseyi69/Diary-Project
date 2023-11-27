@@ -1,14 +1,14 @@
-package services;
+package com.olofofo.services;
 
-import data.models.Diary;
-import data.models.Entry;
-import dtos.request.CreateEntryRequest;
-import dtos.request.FindEntryRequest;
+import com.olofofo.data.models.Entry;
+import com.olofofo.dtos.request.request.AddEntryRequest;
+import com.olofofo.dtos.request.request.FindEntryRequest;
+
+import java.util.Optional;
 
 public interface EntryServices {
-    Entry addEntry(CreateEntryRequest createEntryRequest);
+    Optional<Entry> addEntry(AddEntryRequest addEntryRequest);
 
-    Iterable<Diary> findAll();
 
     long count();
 
@@ -16,9 +16,9 @@ public interface EntryServices {
 
 
 
-    void delete(String ownerName, String title);
+//    void delete(DeleteEntryRequest deleteEntryRequest);
 
     void clear();
 
-    Entry findEntry(FindEntryRequest findEntryRequest);
+    Optional<Entry> findEntry(FindEntryRequest findEntryRequest);
 }

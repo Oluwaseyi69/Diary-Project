@@ -1,19 +1,25 @@
-package data.repositories;
+package com.olofofo.data.repositories;
 
-import data.models.Entry;
+import com.olofofo.data.models.Entry;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface EntryRepo {
-    long count();
+import java.util.Optional;
 
-    Entry findBy(String ownerName, String title);
+public interface EntryRepo extends MongoRepository<Entry, String> {
+   Optional<Entry> findEntryBy(String title);
 
-    Entry findByUsername(String ownerName, String title);
-
-    void delete(Entry foundEntry);
-
-    void clear();
-
-    Entry findById(int id);
-
-    Entry save(Entry entry);
+//    void delete(Optional<Entry> foundEntry);
+    //    long count();
+//
+//    Entry findBy(String ownerName, String title);
+//
+//    Entry findByUsername(String ownerName, String title);
+//
+//    void delete(Entry foundEntry);
+//
+//    void clear();
+//
+//    Entry findById(int id);
+//
+//    Entry save(Entry entry);
 }

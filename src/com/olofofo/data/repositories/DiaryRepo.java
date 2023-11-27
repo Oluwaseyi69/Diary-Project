@@ -1,16 +1,13 @@
-package data.repositories;
+package com.olofofo.data.repositories;
 
-import data.models.Diary;
+import com.olofofo.data.models.Diary;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface DiaryRepo {
-    Diary getBy(int id);
-    Diary save (Diary diary);
-    void add(Diary diary);
-    void delete(Diary diary);
-    void clear(Diary diary);
+import javax.swing.text.html.Option;
+import java.util.Optional;
 
-    Iterable<Diary> findAll();
-     long count();
+public interface DiaryRepo extends MongoRepository<Diary, String> {
 
-    Diary findBy(String username);
+    Optional<Diary> findDiaryByUsername(String username);
+
 }

@@ -1,58 +1,60 @@
-package services;
+package com.olofofo.services;
 
-import dtos.request.CreateEntryRequest;
-import dtos.request.FindEntryRequest;
-import org.junit.jupiter.api.BeforeEach;
+import com.olofofo.data.repositories.EntryRepo;
+import com.olofofo.dtos.request.request.AddEntryRequest;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+
+@SpringBootTest
 public class EntryServicesImplTest {
+    @Autowired
     private EntryServices entryServices;
-    private CreateEntryRequest createEntryRequest;
-    @BeforeEach
-    public void startWith(){
-        entryServices = new EntryServicesImpl();
+    @Autowired
+    private EntryRepo entryRepo;
 
-        createEntryRequest = new CreateEntryRequest();
-        createEntryRequest.setOwnerName("Username");
-        createEntryRequest.setBody("Body");
-        createEntryRequest.setTitle("Title");
-
-    }
     @Test
     public void testThatEntryCanBeAdded(){
-        entryServices.addEntry(createEntryRequest);
-        assertEquals(1, entryServices.count());
-    }
+        AddEntryRequest addEntryRequest = new AddEntryRequest();
+        addEntryRequest.setUsername("Username");
+        addEntryRequest.setBody("The lord is good");
+        addEntryRequest.setTitle("Thank God");
 
-    @Test
-    public void testThatEntryCanBelongingToUserCanBeDeletedUsingTitle(){
-        entryServices.addEntry(createEntryRequest);
-        entryServices.addEntry(createEntryRequest);
-        assertEquals(2, entryServices.count());
-
-        entryServices.delete("Owner Name", "title");
-        assertEquals(1, entryServices.count());
+        entryServices.addEntry(addEntryRequest);
+        assertThat(entryRepo.count(), is(1L));
 
     }
-    @Test
-    public void testThatDeleteEntryThrowsExceptionIfEntryNotFound(){
-        entryServices.addEntry(createEntryRequest);
-        entryServices.addEntry(createEntryRequest);
-        assertEquals(2, entryServices.count());
 
-        assertThrows(IllegalArgumentException.class, ()-> entryServices.delete("Owner Name", "NoTitle"));
-    }
-    @Test
-    public void testThatEntryServicesThrowsExceptionIfEntryNotFound(){
-        entryServices.addEntry(createEntryRequest);
-        entryServices.addEntry(createEntryRequest);
-        assertEquals(2, entryServices.count());
-        assertThrows(IllegalArgumentException.class, ()-> entryServices.findEntry(new FindEntryRequest()));
-
-    }
+//    @Test
+//    public void testThatEntryCanBelongingToUserCanBeDeletedUsingTitle(){
+//        entryServices.addEntry("username", "title","this body");
+//        entryServices.addEntry("username", "title", "this body");
+//        assertEquals(2, entryServices.count());
+//
+//        entryServices.delete("username", "title");
+//        assertEquals(1, entryServices.count());
+//
+//    }
+//    @Test
+//    public void testThatDeleteEntryThrowsExceptionIfEntryNotFound(){
+//        entryServices.addEntry("username", "title", "body");
+//        entryServices.addEntry("username", "title", "body");
+//        assertEquals(2, entryServices.count());
+//
+//        assertThrows(IllegalArgumentException.class, ()-> entryServices.delete("Owner Name", "NoTitle"));
+//    }
+//    @Test
+//    public void testThatEntryServicesThrowsExceptionIfEntryNotFound(){
+//        entryServices.addEntry("username", "title", "body");
+//        entryServices.addEntry("username", "title", "body");
+//        assertEquals(2, entryServices.count());
+//        assertThrows(IllegalArgumentException.class, ()-> entryServices.findEntry(new FindEntryRequest()));
+//
+//    }
 
 
 

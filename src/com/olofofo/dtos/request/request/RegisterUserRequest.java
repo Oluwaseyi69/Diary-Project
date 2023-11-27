@@ -1,4 +1,4 @@
-package com.olofofo.request;
+package com.olofofo.dtos.request.request;
 
 public class RegisterUserRequest {
  private String username;
